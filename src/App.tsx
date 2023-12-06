@@ -1,35 +1,39 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { useEffect, useState } from 'react'
 import './App.css'
-import { useUserContext } from './contexts/usercontext'
+import IUser from './types/IUser'
+import api from './api/api'
+
 
 function App() {
-  const [count, setCount] = useState(0)
+
+  const [users, setUsers] = useState<IUser[]>([]);
+
+
+  useEffect(() => {
+    console.log(users);
+    const getAllUsers = async () => {
+      if(localStorage.getItem('token')){
+        const usersFromServer = await api.getUsers();
+        setUsers(usersFromServer);
+      }
+    }
+    getAllUsers();
+  }, [localStorage.getItem('token')])
+
+  
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <button onClick={api.logout}>
+      Logout
+    </button>
+      {/* <ul>
+        {users.map((user) => (
+          <li key={user.username}></li>
+        ))}
+      </ul> */}
+      </>
+    );
 }
 
 export default App
